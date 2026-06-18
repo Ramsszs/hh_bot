@@ -19,9 +19,9 @@ MAX_RETRIES = 1
 
 
 def load_config():
-    cookie = os.environ.get("HH_COOKIE", "")
-    xsrf = os.environ.get("HH_XSRF", "")
-    resume_hash = os.environ.get("HH_RESUME_HASH", "")
+    cookie = os.environ.get("HH_COOKIE", "").strip()
+    xsrf = os.environ.get("HH_XSRF", "").strip()
+    resume_hash = os.environ.get("HH_RESUME_HASH", "").strip()
     domain = os.environ.get("HH_DOMAIN", "astana.hh.kz")
     user_agent = os.environ.get(
         "HH_USER_AGENT",
