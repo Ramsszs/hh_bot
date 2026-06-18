@@ -36,17 +36,17 @@ def load_config():
     return {
         "url": f"https://{domain}/applicant/resumes/touch",
         "headers": {
-            "Content-Type": "application/x-www-form-urlencoded",
             "Cookie": cookie,
             "User-Agent": user_agent,
             "X-Xsrftoken": xsrf,
             "Referer": f"https://{domain}/applicant/resumes",
             "Origin": f"https://{domain}",
-            "Accept": "application/json, text/plain, */*",
+            "Accept": "application/json",
+            "X-Requested-With": "XMLHttpRequest",
         },
-        "data": {
-            "resume": resume_hash,
-            "undirectable": "true",
+        "files": {
+            "resume": (None, resume_hash),
+            "undirectable": (None, "true"),
         },
     }
 
@@ -58,7 +58,7 @@ def touch_resume(config):
             resp = requests.post(
                 config["url"],
                 headers=config["headers"],
-                data=config["data"],
+                files=config["files"],
                 timeout=TIMEOUT,
                 allow_redirects=False,
             )
