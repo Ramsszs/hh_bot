@@ -66,6 +66,22 @@ def touch_resume(config):
             body_preview = resp.text[:300]
             log.info("Status: %d | Body: %s", resp.status_code, body_preview)
 
+            if resp.status_code == 200:
+                log.info("Resume touched successfully.")
+                return True
+
+            if resp.status_code == 409:
+                log.info("409 Conflict — resume already touched recently (cooldown). This is OK.")
+                return True
+
+            if resp.status_code in (301, 302):
+                location = resp.headers.get("Location", "")
+                if "captcha" in location or "captcha" in body_preview:
+                    log.warning("Redirected to captcha — too many requests. Will try next cycle.")
+                    return True
+                log.warning("Redirect to: %s", location)
+                return True
+
             if resp.status_code == 403:
                 log.error(
                     "403 Forbidden — cookies/xsrf expired. "
@@ -77,7 +93,7 @@ def touch_resume(config):
                 log.error("Server returned %d — check response above.", resp.status_code)
                 return False
 
-            log.info("Resume touched successfully.")
+            log.info("Status %d — unexpected but not an error.", resp.status_code)
             return True
 
         except requests.exceptions.RequestException as e:
